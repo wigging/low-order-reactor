@@ -1,19 +1,18 @@
 """
-Plot exit product yield when same reactor is divided into a number of stages.
+Plot exit tar yield based on mixing level. Plot RTD for one CSTR, three CSTRs
+in series, and twenty CSTRs in series.
 """
 
 import numpy as np
 import matplotlib.pyplot as py
 
-# Function
+# Functions
 # ------------------------------------------------------------------------------
 
 def cstr(T, nstages, taus, taug, yfw):
     tsn = taus/nstages  # solids residence time in each stage (s)
     tgn = taug/nstages  # gas residence time in each stage (s)
     Rgas = 8.314        # ideal gas constant (J/mole K)
-
-    print('tsn = ', tsn, 'and tgn = ', tgn)
 
     # kinetics parameters
     phi = 0.703     # Max tar yield fraction
@@ -125,14 +124,9 @@ tar = [t1[-1], t2[-1], t3[-1], t4[-1], t5[-1], t6[-1], t7[-1], t8[-1], t9[-1], t
 tau = 2.0                       # residence time, s
 t = np.linspace(0, 10, 200)     # time vector, s
 
-n1 = 1                          # number of stages
-rtd1 = scstr(n1, tau, t)        # RTD based on series CSTR
-
-n3 = 3                          # number of stages
-rtd3 = scstr(n3, tau, t)        # RTD based on series CSTR
-
-n20 = 20                        # number of stages
-rtd20 = scstr(n20, tau, t)      # RTD based on series CSTR
+rtd1 = scstr(1, tau, t)         # RTD based on one CSTR
+rtd3 = scstr(3, tau, t)         # RTD based on three CSTRs in series
+rtd20 = scstr(20, tau, t)       # RTD based on twenty CSTRs in series
 
 # Plot
 # ------------------------------------------------------------------------------
@@ -145,16 +139,9 @@ def despine():
 
 py.ion()
 py.close('all')
-py.style.use('presentation')
+#py.style.use('presentation')
 
 py.figure(1)
-py.plot(stages, tar)
-py.xlabel('Number of CSTRs')
-py.ylabel('Exit Tar Yield (mass fraction)')
-py.annotate('Solids residence time = {:.0f} sec'.format(taus), xy=(6, 0.625), size=14)
-despine()
-
-py.figure(2)
 py.gca().invert_xaxis()
 py.plot(stages, tar, lw=4)
 py.ylabel('Exit Tar Yield (mass fraction)', fontsize=18)
@@ -166,7 +153,7 @@ py.tick_params(axis='both', which='major', labelsize=18)
 py.gca().axes.xaxis.set_ticklabels([])
 despine()
 
-py.figure(3)
+py.figure(2)
 py.plot(t, rtd1, lw=6)
 py.ylim((0, 1.0))
 py.xlabel('Time (s)', fontsize=18)
@@ -175,7 +162,7 @@ py.tick_params(axis='both', which='major', labelsize=18)
 py.grid()
 despine()
 
-py.figure(4)
+py.figure(3)
 py.plot(t, rtd3, lw=6)
 py.ylim((0, 1.0))
 py.xlabel('Time (s)', fontsize=18)
@@ -184,7 +171,7 @@ py.tick_params(axis='both', which='major', labelsize=18)
 py.grid()
 despine()
 
-py.figure(5)
+py.figure(4)
 py.plot(t, rtd20, lw=6)
 py.ylim((0, 1.0))
 py.xlabel('Time (s)')

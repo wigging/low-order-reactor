@@ -4,8 +4,8 @@ import matplotlib.pyplot as py
 # Particle size distribution from Figure 2 in Carpenter2014 paper
 # -----------------------------------------------------------------------------
 
-x05, y05 = np.loadtxt('05mm.csv', delimiter=",", unpack=True)   # 0.5 mm sieve
-x2, y2 = np.loadtxt('2mm.csv', delimiter=",", unpack=True)      # 2.0 mm sieve
+x05, y05 = np.loadtxt('data/05mm.csv', delimiter=",", unpack=True)   # 0.5 mm sieve
+x2, y2 = np.loadtxt('data/2mm.csv', delimiter=",", unpack=True)      # 2.0 mm sieve
 
 # Plot
 # ------------------------------------------------------------------------------

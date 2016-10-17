@@ -1,6 +1,8 @@
 """
-Script to test solution of general CSTR steady-state conversions for multiple
-parallel and series 1st-order reactions.
+Compare tar yield for different gas residence times for reactor model based on
+a series of CSTR reactors at steady-state conditions. Chemistry in each reactor
+based on Liden 1988 kinetic scheme for biomass fast pyrolysis in a bubbling
+fluidized bed reactor.
 
 Test rxns- Based on Liden's (1988) kinetics
 R1: W => t1*T (wood to tar), k1 = rate coeff. (1/s)
@@ -25,9 +27,9 @@ import numpy as np
 import matplotlib.pyplot as py
 
 # Test case operating conditions and constant parameters
-Rgas = 8.314        # Ideal gas constant (J/mole K)
-TK = 500 + 273      # Reaction temp (K)
-yfw = 1.0           # Normalized wood feed
+Rgas = 8.314    # Ideal gas constant (J/mole K)
+TK = 773        # Reaction temp (K)
+yfw = 1.0       # Normalized wood feed
 
 def prod(taus, taug, nstages):
     # Residence time in each stage

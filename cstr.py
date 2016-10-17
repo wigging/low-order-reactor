@@ -1,7 +1,7 @@
 """
-Reactor model using multiple CSTR reactors in series at steady-state fast
-pyrolysis conditions. Chemistry in each reactor based on Liden 1988 kinetic
-scheme for a bubbling fluidized bed reactor.
+Reactor model for one or more CSTR reactors in series at steady-state
+conditions. Chemistry in each reactor based on Liden 1988 kinetic scheme for
+biomass fast pyrolysis in a bubbling fluidized bed reactor.
 
 First-order reactions from Liden 1998 kinetics:
 wood --k1--> tar --k2--> gas
@@ -35,15 +35,16 @@ Liden, Berruti, Scott, 1988. Chem. Eng. Comm., 65, pp 207-221.
 import numpy as np
 import matplotlib.pyplot as py
 
-# Test case operating conditions and constant parameters
-Rgas = 8.314        # Ideal gas constant (J/mole K)
-TK = 500 + 273      # Reaction temp (K)
+# Parameters
+TK = 773            # reaction temperature, K
+taus = 4            # total solids residence time, s
+taug = 0.5          # total gas residence time, s
+yfw = 1.0           # normalized wood feed
+
+# Number of stages and residence time in each stage
 nstages = 10        # No. of CSTR stages
-taus = 4            # Total solids residence time (s)
-taug = 0.5          # Total gas residence time (s)
 tsn = taus/nstages  # Solids residence time in each stage (s)
 tgn = taug/nstages  # Gas residence time in each stage (s)
-yfw = 1.0           # Normalized wood feed
 
 # Kinetics parameters
 phi = 0.703     # Max tar yield fraction
@@ -52,6 +53,8 @@ t1 = 1          # Tar mass formed/mass wood converted in rxn. 1
 g2 = 1          # Gas mass formed/mass tar converted in rxn. 2
 c3 = FC/(1-phi) # Char mass formed/mass wood converted in rxn. 3
 g3 = 1-c3       # Gas mass formed/mass wood converted in rxn. 3
+Rgas = 8.314    # Ideal gas constant (J/mole K)
+
 k2 = 4.28e6*np.exp(-107.5e3/Rgas/TK)    # Rxn. 2 rate coeff. (1/s)
 k = 1e13*np.exp(-183.3e3/Rgas/TK)       # Sum of rxn. 1 & 3 rate coefficients (1/s)
 k1 = phi*k                              # Rxn 1 rate constant (1/s)

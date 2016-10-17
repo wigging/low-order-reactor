@@ -1,10 +1,8 @@
 """
-Reactor model using multiple CSTR in series at steady-state conditions.
-Chemistry provided from Liden 1988 kinetics scheme for wood pyrolysis in a
-bubbling fluidized bed reactor.
-
-Script to test solution of general CSTR steady-state conversions for multiple
-parallel and series 1st-order reactions.
+Reactor model accounting for a static (single) particle size in one or more
+CSTR reactors in series at steady-state conditions. Chemistry in each reactor
+based on Liden 1988 kinetic scheme for biomass fast pyrolysis in a bubbling
+fluidized bed reactor.
 
 Test rxns- Based on Liden's (1988) kinetics
 R1: W => t1*T (wood to tar), k1 = rate coeff. (1/s)
@@ -37,18 +35,7 @@ taus = 4            # total solids residence time, s
 taug = 0.5          # total gas residence time, s
 yfw = 1             # normalized mass fraction of initial wood, (-)
 
-# Particle Size Distribution Data 
-# ------------------------------------------------------------------------------ 
-
-file1 = 'size_distributions.txt'
-data = np.loadtxt(file1, skiprows=1, unpack=True)
-
-data_vf2 = data[2]      # volume fractions for 2.0 mm sieve size, (-)
-data_vf05 = data[3]     # volume fractions for 0.5 mm sieve size, (-)
-data_v = data[4]        # volume of particles, m^3
-data_sa = data[5]       # surface area of particles, m^2
-
-# Functions
+# Function
 # ------------------------------------------------------------------------------
 
 def cstr(T, nstages, taus, taug, tv, wood):
@@ -98,93 +85,41 @@ def cstr(T, nstages, taus, taug, tv, wood):
 # Calculate Yields
 # ------------------------------------------------------------------------------
 
-# surface area, volume, and dsv for each particle size bin
-ds = (data_sa/np.pi)**(1/2)     # surface area equivalent sphere diameter, m
-dv = (6/np.pi*data_v)**(1/3)    # volume equivalent sphere diameter, m
-dsv = (dv**3)/(ds**2)           # surface area to volume sphere diameter, m
+tv = 1.6            # devolatilization time for Dp = 0.5 mm, s
+yW, yT, yG, yC = cstr(T, nstages, taus, taug, tv, yfw)
 
-# devolatilization time for each bin
-dsv = dsv*1000  # convert m to mm
-tv95 = 0.8*np.exp(1525/T)*(dsv*1.2)
+tv = 8.6            # devolatilization time for Dp = 2 mm, s
+yW2, yT2, yG2, yC2 = cstr(T, nstages, taus, taug, tv, yfw)
 
+# Print Mass Balances
+# ------------------------------------------------------------------------------
 
-# yields from 0.5 mm sieve particle size distribution
-wood05 = []; tar05 = []; gas05 = []; char05 = []
-
-for tv in tv95:
-    wood, tar, gas, char = cstr(T, nstages, taus, taug, tv, yfw)
-    wood05.append(wood)
-    tar05.append(tar)
-    gas05.append(gas)
-    char05.append(char)
-
-wood05_wt = []; tar05_wt = []; gas05_wt = []; char05_wt = []
-
-for (idx, vf) in enumerate(data_vf05):
-    w = wood05[idx]*vf
-    wood05_wt.append(w)
-    t = tar05[idx]*vf
-    tar05_wt.append(t)
-    g = gas05[idx]*vf
-    gas05_wt.append(g)
-    c = char05[idx]*vf
-    char05_wt.append(c)
-
-wood05_sum = sum(wood05_wt)
-tar05_sum = sum(tar05_wt)
-gas05_sum = sum(gas05_wt)
-char05_sum = sum(char05_wt)
-
-# yields from 2.0 mm sieve particle size distribution
-wood20 = []; tar20 = []; gas20 = []; char20 = []
-
-for tv in tv95:
-    wood, tar, gas, char = cstr(T, nstages, taus, taug, tv, yfw)
-    wood20.append(wood)
-    tar20.append(tar)
-    gas20.append(gas)
-    char20.append(char)
-
-wood20_wt = []; tar20_wt = []; gas20_wt = []; char20_wt = []
-
-for (idx, vf) in enumerate(data_vf2):
-    w = wood20[idx]*vf
-    wood20_wt.append(w)
-    t = tar20[idx]*vf
-    tar20_wt.append(t)
-    g = gas20[idx]*vf
-    gas20_wt.append(g)
-    c = char20[idx]*vf
-    char20_wt.append(c)
-    
-wood20_sum = sum(wood20_wt)
-tar20_sum = sum(tar20_wt)
-gas20_sum = sum(gas20_wt)
-char20_sum = sum(char20_wt)
-
-# don't forget to check mass balances
+mout = yW+yT+yG+yC  # total mass out
+mratio = mout/yfw   # ratio total mass out/total mass in
+print('total mass out\n', mout)
+print('total mass ratio (mass out / mass in)\n', mratio)
 
 # Print Product Yields
 # ------------------------------------------------------------------------------
 
 print('- 0.5 mm sieve yields (top of reactor) -')
-print('wood = ', wood05_sum[-1]*100)
-print('tar = ', tar05_sum[-1]*100)
-print('gas = ', gas05_sum[-1]*100)
-print('char = ', char05_sum[-1]*100)
-print('mass balance = ', wood05_sum+tar05_sum+gas05_sum+char05_sum)
+print('wood = ', yW[-1]*100)
+print('tar = ', yT[-1]*100)
+print('gas = ', yG[-1]*100)
+print('char = ', yC[-1]*100)
+print('mass balance = ', yW+yT+yG+yC)
 
 print('- 2.0 mm sieve yields (top of reactor) -')
-print('wood = ', wood20_sum[-1]*100)
-print('tar = ', tar20_sum[-1]*100)
-print('gas = ', gas20_sum[-1]*100)
-print('char = ', char20_sum[-1]*100)
-print('mass balance = ', wood20_sum+tar20_sum+gas20_sum+char20_sum)
+print('wood = ', yW2[-1]*100)
+print('tar = ', yT2[-1]*100)
+print('gas = ', yG2[-1]*100)
+print('char = ', yC2[-1]*100)
+print('mass balance = ', yW2+yT2+yG2+yC2)
 
 # Plot Results
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-ns = range(nstages) # list for numbers of stages
+ns = range(nstages)   # list for numbers of stages
 
 def despine():
     ax = py.gca()
@@ -197,15 +132,25 @@ py.ion()
 py.close('all')
 #py.style.use('presentation')
 
-py.figure(1, figsize=(5, 8))
-py.plot(tar05_sum, ns, lw=2, label='0.5 mm model')
-py.plot(tar20_sum, ns, lw=2, label='2.0 mm model')
-py.axvline(0.71, c='b', ls='--', lw=2, label='0.5 mm sieve')
-py.axvline(0.64, c='g', ls='--', lw=2, label='2.0 mm sieve')
+py.figure(1)
+py.plot(ns, yW, label='wood')
+py.plot(ns, yT, label='tar')
+py.plot(ns, yG, label='gas')
+py.plot(ns, yC, label='char')
+py.xlabel('Axial Reactor Height')
+py.ylabel('Product Yields (wt. fraction)')
+py.legend(loc='best', numpoints=1)
+despine()
+
+py.figure(2, figsize=(5, 8))
+py.plot(yT, ns, lw=2, label='0.5 mm model')
+py.plot(yT2, ns, lw=2, label='2.0 mm model')
+py.axvline(0.71, c='b', lw=2, ls='--', label='0.5 mm sieve')
+py.axvline(0.64, c='g', lw=2, ls='--', label='2.0 mm sieve')
 py.xlim([0, 0.80])
 py.xlabel('Tar Yield (wt. fraction)')
 py.ylabel('Axial Reactor Height')
-py.title('Distribution of Particle Sizes')
+py.title('Static Particle Size')
 py.legend(loc='best', numpoints=1, fontsize='medium', frameon=False)
 despine()
 
