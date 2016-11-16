@@ -36,10 +36,10 @@ import numpy as np
 import matplotlib.pyplot as py
 
 # Parameters
-TK = 773            # reaction temperature, K
-taus = 4            # total solids residence time, s
-taug = 0.5          # total gas residence time, s
-yfw = 1.0           # normalized wood feed
+TK = 773        # reaction temperature, K
+taus = 3        # total solids residence time, s
+taug = 1        # total gas residence time, s
+yfw = 1.0       # normalized wood feed
 
 # Number of stages and residence time in each stage
 nstages = 10        # No. of CSTR stages
@@ -102,17 +102,17 @@ py.close('all')
 
 py.figure(1)
 py.plot(yT, lw=2, label='tar')
-py.xlabel('Stage Number')
-py.ylabel('Tar Yield (normalized)')
-py.legend(loc='best', numpoints=1)
+py.xlabel('Reactor Height (stage number)')
+py.ylabel('Tar Yield (wt. fraction)')
+py.legend(loc='best', numpoints=1, frameon=False)
 py.grid()
 despine()
 
 py.figure(2, figsize=(5, 8))
 py.plot(yT, ns, lw=2, label='tar')
-py.ylabel('Stage Number')
-py.xlabel('Tar Yield (normalized)')
-py.legend(loc='best', numpoints=1)
+py.ylabel('Reactor Height (stage number)')
+py.xlabel('Tar Yield (wt. fraction)')
+py.legend(loc='best', numpoints=1, frameon=False)
 py.grid()
 despine()
 
@@ -121,8 +121,8 @@ py.plot(yW, 'g', lw=2, label='wood')
 py.plot(yT, 'b', lw=2, label='tar')
 py.plot(yG, 'r', lw=2, label='gas')
 py.plot(yC, 'c', lw=2, label='char')
-py.xlabel('Stage Number')
-py.ylabel('Product Yield (normalized)')
-py.legend(loc='best', numpoints=1)
+py.xlabel('Reactor Height (stage number)')
+py.ylabel('Product Yield (wt. fraction)')
+py.legend(loc='best', numpoints=1, frameon=False)
 py.grid()
 despine()
