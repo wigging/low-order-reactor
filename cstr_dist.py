@@ -24,7 +24,7 @@ yC = (0 + c3*k3*yW*tau)/(1+0)
 """
 
 import numpy as np
-import matplotlib.pyplot as py
+import matplotlib.pyplot as plt
 
 # Parameters
 # ------------------------------------------------------------------------------
@@ -35,8 +35,8 @@ taus = 4            # total solids residence time, s
 taug = 0.5          # total gas residence time, s
 yfw = 1             # normalized mass fraction of initial wood, (-)
 
-# Particle Size Distribution Data 
-# ------------------------------------------------------------------------------ 
+# Particle Size Distribution Data
+# ------------------------------------------------------------------------------
 
 file1 = 'data/sizeinfo.txt'
 data = np.loadtxt(file1, skiprows=1, unpack=True)
@@ -48,6 +48,7 @@ data_sa = data[5]       # surface area of particles, m^2
 
 # Functions
 # ------------------------------------------------------------------------------
+
 
 def cstr(T, nstages, taus, taug, tv, wood):
     tsn = taus/nstages  # solids residence time in each stage (s)
@@ -93,6 +94,7 @@ def cstr(T, nstages, taus, taug, tv, wood):
 
     return yW, yT, yG, yC
 
+
 # Calculate Yields
 # ------------------------------------------------------------------------------
 
@@ -107,7 +109,10 @@ tv95 = 0.8*np.exp(1525/T)*(dsv*1.2)
 
 
 # yields from 0.5 mm sieve particle size distribution
-wood05 = []; tar05 = []; gas05 = []; char05 = []
+wood05 = []
+tar05 = []
+gas05 = []
+char05 = []
 
 for tv in tv95:
     wood, tar, gas, char = cstr(T, nstages, taus, taug, tv, yfw)
@@ -116,7 +121,10 @@ for tv in tv95:
     gas05.append(gas)
     char05.append(char)
 
-wood05_wt = []; tar05_wt = []; gas05_wt = []; char05_wt = []
+wood05_wt = []
+tar05_wt = []
+gas05_wt = []
+char05_wt = []
 
 for (idx, vf) in enumerate(data_vf05):
     w = wood05[idx]*vf
@@ -134,7 +142,10 @@ gas05_sum = sum(gas05_wt)
 char05_sum = sum(char05_wt)
 
 # yields from 2.0 mm sieve particle size distribution
-wood20 = []; tar20 = []; gas20 = []; char20 = []
+wood20 = []
+tar20 = []
+gas20 = []
+char20 = []
 
 for tv in tv95:
     wood, tar, gas, char = cstr(T, nstages, taus, taug, tv, yfw)
@@ -143,7 +154,10 @@ for tv in tv95:
     gas20.append(gas)
     char20.append(char)
 
-wood20_wt = []; tar20_wt = []; gas20_wt = []; char20_wt = []
+wood20_wt = []
+tar20_wt = []
+gas20_wt = []
+char20_wt = []
 
 for (idx, vf) in enumerate(data_vf2):
     w = wood20[idx]*vf
@@ -154,7 +168,7 @@ for (idx, vf) in enumerate(data_vf2):
     gas20_wt.append(g)
     c = char20[idx]*vf
     char20_wt.append(c)
-    
+
 wood20_sum = sum(wood20_wt)
 tar20_sum = sum(tar20_wt)
 gas20_sum = sum(gas20_wt)
@@ -182,28 +196,18 @@ print('mass balance = ', wood20_sum+tar20_sum+gas20_sum+char20_sum)
 # Plot Results
 # ------------------------------------------------------------------------------
 
-ns = range(nstages) # list for numbers of stages
+ns = range(nstages)     # list for numbers of stages
 
-def despine():
-    ax = py.gca()
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
-    py.tick_params(bottom='off', top='off', left='off', right='off')
-    py.grid()
+plt.ion()
+plt.close('all')
 
-py.ion()
-py.close('all')
-#py.style.use('presentation')
-
-py.figure(1, figsize=(5, 8))
-py.plot(tar05_sum, ns, lw=2, label='0.5 mm model')
-py.plot(tar20_sum, ns, lw=2, label='2.0 mm model')
-py.axvline(0.71, c='b', ls='--', lw=2, label='0.5 mm sieve')
-py.axvline(0.64, c='g', ls='--', lw=2, label='2.0 mm sieve')
-py.xlim([0, 0.80])
-py.xlabel('Tar Yield (wt. fraction)')
-py.ylabel('Reactor Height (stage number)')
-py.title('Distribution of Particle Sizes')
-py.legend(loc='best', numpoints=1, fontsize='medium', frameon=False)
-despine()
-
+plt.figure(1, figsize=(5, 8))
+plt.plot(tar05_sum, ns, lw=2, label='0.5 mm model')
+plt.plot(tar20_sum, ns, lw=2, label='2.0 mm model')
+plt.axvline(0.71, c='b', ls='--', lw=2, label='0.5 mm sieve')
+plt.axvline(0.64, c='g', ls='--', lw=2, label='2.0 mm sieve')
+plt.xlim([0, 0.80])
+plt.xlabel('Tar Yield (wt. fraction)')
+plt.ylabel('Reactor Height (stage number)')
+plt.title('Distribution of Particle Sizes')
+plt.legend(loc='best', numpoints=1, fontsize='medium', frameon=False)
